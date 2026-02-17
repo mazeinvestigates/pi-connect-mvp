@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from '../supabaseClient'
+import { filterMessageContent, getWarningMessage } from '../contentFilter'
 
 export default function MessageThread({ conversation, currentUser, onBack }) {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
+  const [filterWarning, setFilterWarning] = useState(null)
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -96,13 +98,28 @@ export default function MessageThread({ conversation, currentUser, onBack }) {
     if (!newMessage.trim()) return
 
     setSending(true)
+    setFilterWarning(null)
+    
     try {
+      // Filter the message content
+      const filterResult = filterMessageContent(newMessage.trim())
+      
+      // Show warning if content was filtered
+      if (filterResult.wasFiltered) {
+        const warning = getWarningMessage(filterResult.blockedItems)
+        setFilterWarning(warning)
+        
+        // Auto-hide warning after 5 seconds
+        setTimeout(() => setFilterWarning(null), 5000)
+      }
+
+      // Send the filtered message
       const { error } = await supabase
         .from('messages')
         .insert({
           conversation_id: conversation.id,
           sender_id: currentUser.id,
-          content: newMessage.trim()
+          content: filterResult.filtered // Use filtered content
         })
 
       if (error) throw error
@@ -221,6 +238,11 @@ export default function MessageThread({ conversation, currentUser, onBack }) {
       </div>
 
       <form onSubmit={handleSendMessage} className="message-input-form">
+        {filterWarning && (
+          <div className="filter-warning">
+            ⚠️ {filterWarning}
+          </div>
+        )}
         <input
           type="text"
           value={newMessage}
