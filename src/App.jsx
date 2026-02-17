@@ -3,6 +3,7 @@ import { supabase } from './supabaseClient'
 import SearchPage from './pages/SearchPage'
 import AuthPage from './pages/AuthPage'
 import DashboardPage from './pages/DashboardPage'
+import MessagingPage from './pages/MessagingPage'
 import './App.css'
 
 export default function App() {
@@ -100,6 +101,12 @@ export default function App() {
               </button>
               <button 
                 className="nav-link" 
+                onClick={() => setCurrentPage('messages')}
+              >
+                Messages
+              </button>
+              <button 
+                className="nav-link" 
                 onClick={() => setCurrentPage('search')}
               >
                 Search
@@ -154,6 +161,13 @@ export default function App() {
           <DashboardPage 
             user={user}
             profile={profile}
+            onNavigate={setCurrentPage}
+          />
+        )}
+
+        {currentPage === 'messages' && user && (
+          <MessagingPage 
+            user={user}
             onNavigate={setCurrentPage}
           />
         )}

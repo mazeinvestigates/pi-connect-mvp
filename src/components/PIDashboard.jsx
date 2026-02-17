@@ -1,9 +1,20 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabaseClient'
+import { getOrCreateConversation } from '../messagingUtils'
 
 export default function PIDashboard({ data, onRefresh, onNavigate }) {
   const { consultationRequests, profile } = data
   const [updatingStatus, setUpdatingStatus] = useState(null)
+
+  const handleMessageClient = async (clientUserId) => {
+    try {
+      await getOrCreateConversation(profile.user_id, clientUserId)
+      onNavigate('messages')
+    } catch (error) {
+      console.error('Error starting conversation:', error)
+      alert('Failed to start conversation. Please try again.')
+    }
+  }
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -191,8 +202,11 @@ export default function PIDashboard({ data, onRefresh, onNavigate }) {
                   </div>
 
                   <div className="request-actions">
-                    <button className="btn-primary-small">
-                      Message Client
+                    <button 
+                      className="btn-primary-small"
+                      onClick={() => handleMessageClient(request.requester_user_id)}
+                    >
+                      💬 Message Client
                     </button>
                     {request.status === 'contacted' && (
                       <button 

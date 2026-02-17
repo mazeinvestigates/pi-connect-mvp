@@ -1,7 +1,21 @@
 import React from 'react'
+import { getOrCreateConversation } from '../messagingUtils'
 
 export default function ClientDashboard({ data, onRefresh, onNavigate }) {
   const { consultationRequests } = data
+
+  const handleMessagePI = async (pi) => {
+    try {
+      await getOrCreateConversation(
+        data.user?.id || window.supabase?.auth?.user()?.id,
+        pi.user_id
+      )
+      onNavigate('messages')
+    } catch (error) {
+      console.error('Error starting conversation:', error)
+      alert('Failed to start conversation. Please try again.')
+    }
+  }
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -113,8 +127,11 @@ export default function ClientDashboard({ data, onRefresh, onNavigate }) {
                           {pi.email && <span>✉️ {pi.email}</span>}
                         </div>
                         {request.status === 'accepted' && (
-                          <button className="btn-primary-small">
-                            Message {pi.first_name}
+                          <button 
+                            className="btn-primary-small"
+                            onClick={() => handleMessagePI(pi)}
+                          >
+                            💬 Message {pi.first_name}
                           </button>
                         )}
                       </>

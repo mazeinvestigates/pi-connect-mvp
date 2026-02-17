@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import ConsultationModal from '../components/ConsultationModal'
+import { getOrCreateConversation } from '../messagingUtils'
 
 export default function SearchPage({ user, onNavigate }) {
   const [view, setView] = useState('search') // 'search' | 'results'
@@ -94,6 +95,24 @@ export default function SearchPage({ user, onNavigate }) {
   const handleViewProfile = (pi) => {
     setSelectedPI(pi)
     setShowProfileModal(true)
+  }
+
+  const handleMessagePI = async (pi) => {
+    if (!user) {
+      if (window.confirm('You need to sign in to message this PI. Sign in now?')) {
+        onNavigate('auth')
+      }
+      return
+    }
+
+    try {
+      await getOrCreateConversation(user.id, pi.user_id)
+      setShowProfileModal(false)
+      onNavigate('messages')
+    } catch (error) {
+      console.error('Error starting conversation:', error)
+      alert('Failed to start conversation. Please try again.')
+    }
   }
 
   if (view === 'search') {
@@ -300,6 +319,12 @@ export default function SearchPage({ user, onNavigate }) {
               )}
 
               <div className="modal-actions">
+                <button 
+                  className="btn-secondary btn-large"
+                  onClick={() => handleMessagePI(selectedPI)}
+                >
+                  💬 Message This PI
+                </button>
                 <button 
                   className="btn-primary btn-large"
                   onClick={() => {
