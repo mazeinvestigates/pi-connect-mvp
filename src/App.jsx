@@ -255,7 +255,7 @@ export default function App() {
             user={user}
             profile={profile}
             onNavigate={setCurrentPage}
-            onProfileUpdate={loadUserProfile}
+            onProfileUpdate={loadProfile}
           />
         )}
 
