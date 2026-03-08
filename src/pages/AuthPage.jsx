@@ -41,14 +41,24 @@ export default function AuthPage({ onSuccess }) {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName
-          }
-        }
+        options: { data: { full_name: fullName } }
       })
 
       if (error) throw error
+
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: data.user.id,
+            full_name: fullName,
+            email: email,
+            role: 'user'
+          })
+        if (profileError && !profileError.message.includes('duplicate')) {
+          throw profileError
+        }
+      }
 
       setMessage('Account created! Please check your email to verify.')
       setTimeout(() => onSuccess(), 1500)
@@ -65,22 +75,29 @@ export default function AuthPage({ onSuccess }) {
     setError(null)
 
     try {
-      // First create the auth account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName
-          }
-        }
+        options: { data: { full_name: fullName } }
       })
 
       if (authError) throw authError
 
-      // Then create a PI profile
       if (authData.user) {
+        // Must insert profiles row before pi_profiles (foreign key dependency)
         const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: authData.user.id,
+            full_name: fullName,
+            email: email,
+            role: 'user'
+          })
+        if (profileError && !profileError.message.includes('duplicate')) {
+          throw profileError
+        }
+
+        const { error: piProfileError } = await supabase
           .from('pi_profiles')
           .insert({
             user_id: authData.user.id,
@@ -89,8 +106,7 @@ export default function AuthPage({ onSuccess }) {
             email: email,
             is_verified: false
           })
-
-        if (profileError) throw profileError
+        if (piProfileError) throw piProfileError
       }
 
       setMessage('PI account created! Please complete your profile and submit for verification.')
