@@ -46,19 +46,7 @@ export default function AuthPage({ onSuccess }) {
 
       if (error) throw error
 
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: data.user.id,
-            full_name: fullName,
-            email: email,
-            role: 'client'
-          })
-        if (profileError && !profileError.message.includes('duplicate')) {
-          throw profileError
-        }
-      }
+      // profiles row is created automatically via database trigger
 
       setMessage('Account created! Please check your email to verify.')
       setTimeout(() => onSuccess(), 1500)
@@ -84,18 +72,9 @@ export default function AuthPage({ onSuccess }) {
       if (authError) throw authError
 
       if (authData.user) {
-        // Must insert profiles row before pi_profiles (foreign key dependency)
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
-            full_name: fullName,
-            email: email,
-            role: 'client'
-          })
-        if (profileError && !profileError.message.includes('duplicate')) {
-          throw profileError
-        }
+        // profiles row created automatically via trigger
+        // small delay to ensure trigger has fired before pi_profiles insert
+        await new Promise(resolve => setTimeout(resolve, 500))
 
         const { error: piProfileError } = await supabase
           .from('pi_profiles')
