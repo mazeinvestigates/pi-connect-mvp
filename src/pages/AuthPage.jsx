@@ -63,30 +63,14 @@ export default function AuthPage({ onSuccess }) {
     setError(null)
 
     try {
+      // Pass is_pi flag in metadata — trigger handles both profiles and pi_profiles inserts
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { full_name: fullName } }
+        options: { data: { full_name: fullName, is_pi: 'true' } }
       })
 
       if (authError) throw authError
-
-      if (authData.user) {
-        // profiles row created automatically via trigger
-        // small delay to ensure trigger has fired before pi_profiles insert
-        await new Promise(resolve => setTimeout(resolve, 500))
-
-        const { error: piProfileError } = await supabase
-          .from('pi_profiles')
-          .insert({
-            user_id: authData.user.id,
-            first_name: fullName.split(' ')[0] || '',
-            last_name: fullName.split(' ').slice(1).join(' ') || '',
-            email: email,
-            is_verified: false
-          })
-        if (piProfileError) throw piProfileError
-      }
 
       setMessage('PI account created! Please complete your profile and submit for verification.')
       setTimeout(() => onSuccess(), 1500)
