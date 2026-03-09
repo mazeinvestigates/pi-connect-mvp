@@ -53,7 +53,7 @@ export default function AuthPage({ onSuccess }) {
             user_id: data.user.id,
             full_name: fullName,
             email: email,
-            role: 'user'
+            role: 'client'
           })
         if (profileError && !profileError.message.includes('duplicate')) {
           throw profileError
@@ -91,7 +91,7 @@ export default function AuthPage({ onSuccess }) {
             user_id: authData.user.id,
             full_name: fullName,
             email: email,
-            role: 'user'
+            role: 'client'
           })
         if (profileError && !profileError.message.includes('duplicate')) {
           throw profileError
