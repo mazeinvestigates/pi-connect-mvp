@@ -29,7 +29,7 @@ export default function ProfileEditPage({ user, profile, onNavigate, onProfileUp
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
 
-  INVESTIGATION_TYPES
+  const specialtyOptions = INVESTIGATION_TYPES
 
   const responseTimeOptions = [
     'Within 1 hour',
