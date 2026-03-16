@@ -8,7 +8,7 @@
 
 **Key Metrics Tracked:**
 - 💰 **Platform Revenue** - Total platform fees collected with growth %
-- 👥 **User Growth** - Total users, PIs, clients, new signups
+- 👥 **User Growth** - Total users, PIs, clients, new signups 
 - 💳 **Transaction Volume** - GMV, transaction count, average values
 - 💼 **Job Marketplace** - Posted, filled, fill rate percentage
 - ⭐ **Quality Metrics** - Average ratings, review counts
