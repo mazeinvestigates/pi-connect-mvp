@@ -8,7 +8,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
-const FROM_EMAIL = 'noreply@piconnect.com' // Update to your verified Resend domain
+const FROM_EMAIL = 'noreply@piconnect.co'
 const PLATFORM_NAME = 'PI Connect'
 
 const corsHeaders = {
@@ -166,8 +166,48 @@ const templates = {
         <h2 style="color: #667eea;">New Review Posted</h2>
         <p>Hi ${recipientName},</p>
         <p><strong>${reviewerName}</strong> left you a <strong>${rating}-star review</strong> on PI Connect.</p>
-        <a href="https://piconnect.com" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+        <a href="https://piconnect.co" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
           View Review
+        </a>
+      </div>
+    `
+  }),
+
+  pi_verified: ({ recipientName }) => ({
+    subject: `You're verified! Your PI Connect profile is now live`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">You're Verified! 🎉</h2>
+        <p>Hi ${recipientName},</p>
+        <p>Great news — your PI Connect profile has been reviewed and approved. You're now fully verified and ready to start connecting with clients.</p>
+        <p><strong>What you can do now:</strong></p>
+        <ul>
+          <li>Apply to open jobs in the marketplace</li>
+          <li>Message clients directly</li>
+          <li>Accept consultation requests</li>
+          <li>Offer and accept subcontract work</li>
+        </ul>
+        <a href="https://piconnect.co" style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          Go to My Dashboard
+        </a>
+      </div>
+    `
+  }),
+
+  pi_rejected: ({ recipientName, notes }) => ({
+    subject: `Update on your PI Connect verification`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">Verification Update</h2>
+        <p>Hi ${recipientName},</p>
+        <p>After reviewing your application, we were unable to verify your credentials at this time.</p>
+        ${notes ? `
+        <div style="background:#fef2f2;border-left:3px solid #dc2626;padding:12px;margin:16px 0;">
+          <strong>Reason:</strong><br>${notes}
+        </div>` : ''}
+        <p>If you believe this is an error or would like to resubmit with updated documentation, please update your profile and contact us.</p>
+        <a href="https://piconnect.co" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          Update My Profile
         </a>
       </div>
     `
