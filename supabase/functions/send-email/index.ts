@@ -26,7 +26,7 @@ const templates = {
         <p>Hi ${recipientName},</p>
         <p><strong>${senderName}</strong> sent you a message on PI Connect.</p>
         <p>Log in to view and reply.</p>
-        <a href="https://piconnect.com" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+        <a href="https://pi-connect-mvp.vercel.app?page=messages" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
           View Message
         </a>
         <p style="color:#888;font-size:12px;margin-top:24px;">You're receiving this because you have message notifications enabled. Manage preferences in your account settings.</p>
@@ -57,8 +57,8 @@ const templates = {
         <p>Hi ${recipientName},</p>
         <p><strong>${clientName}</strong> has accepted your application for: <strong>${jobTitle}</strong>.</p>
         <p>Log in to message your client and get started.</p>
-        <a href="https://piconnect.com" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
-          View Job
+        <a href="https://pi-connect-mvp.vercel.app?page=jobs&tab=my-jobs" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          Go to My Jobs
         </a>
       </div>
     `
@@ -75,7 +75,7 @@ const templates = {
           : `<p>You've received a payment of <strong>$${amount}</strong> for <strong>${jobTitle}</strong>.</p>`
         }
         <p>View your full transaction history in the Payments section.</p>
-        <a href="https://piconnect.com" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+        <a href="https://pi-connect-mvp.vercel.app?page=transactions" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
           View Transactions
         </a>
       </div>
@@ -187,8 +187,84 @@ const templates = {
           <li>Accept consultation requests</li>
           <li>Offer and accept subcontract work</li>
         </ul>
-        <a href="https://piconnect.co" style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+        <a href="https://pi-connect-mvp.vercel.app?page=dashboard" style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
           Go to My Dashboard
+        </a>
+      </div>
+    `
+  }),
+
+  invoice_sent: ({ recipientName, jobTitle, amount, notes }) => ({
+    subject: `Invoice received for ${jobTitle} — PI Connect`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #667eea;">Invoice Ready for Payment</h2>
+        <p>Hi ${recipientName},</p>
+        <p>Your PI has completed work on <strong>${jobTitle}</strong> and sent you an invoice.</p>
+        ${amount ? `<p><strong>Amount due: $${amount}</strong></p>` : ''}
+        ${notes ? `<div style="background:#f9fafb;border-left:3px solid #667eea;padding:12px;margin:16px 0;"><strong>Note from PI:</strong><br>${notes}</div>` : ''}
+        <p>Log in to your dashboard to review and pay.</p>
+        <a href="https://pi-connect-mvp.vercel.app?page=dashboard" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          Pay Invoice
+        </a>
+      </div>
+    `
+  }),
+
+  job_match: ({ recipientName, jobTitle, jobLocation, jobType, budgetMin, budgetMax, jobId }) => ({
+    subject: `New job match: ${jobTitle} — PI Connect`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #667eea;">New Job Match 🎯</h2>
+        <p>Hi ${recipientName},</p>
+        <p>A new job matching your specialties was just posted on PI Connect.</p>
+        <div style="background:#f9fafb;border-radius:8px;padding:16px;margin:16px 0;">
+          <p style="font-weight:600;font-size:16px;margin:0 0 8px;">${jobTitle}</p>
+          <p style="margin:4px 0;color:#6b7280;">📍 ${jobLocation}</p>
+          <p style="margin:4px 0;color:#6b7280;">🔍 ${jobType}</p>
+          ${budgetMin && budgetMax ? `<p style="margin:4px 0;color:#6b7280;">💰 $${budgetMin} – $${budgetMax}</p>` : ''}
+        </div>
+        <a href="https://pi-connect-mvp.vercel.app?page=jobs" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:8px;">
+          View & Apply
+        </a>
+        <p style="color:#888;font-size:12px;margin-top:24px;">You're receiving this because you have job match notifications enabled. Manage preferences in your account settings.</p>
+      </div>
+    `
+  }),
+
+  contract_signed: ({ recipientName, clientName, clientEmail, jobTitle, signedAt, contractType }) => ({
+    subject: `Contract signed by ${clientName} — ${jobTitle}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">Contract Accepted ✓</h2>
+        <p>Hi ${recipientName},</p>
+        <p><strong>${clientName}</strong> has accepted and signed the engagement contract for:</p>
+        <div style="background:#f9fafb;border-radius:8px;padding:16px;margin:16px 0;">
+          <p style="font-weight:600;margin:0 0 8px;">${jobTitle}</p>
+          <p style="margin:4px 0;color:#6b7280;font-size:14px;">Contract type: ${contractType === 'platform' ? 'PI Connect Standard Agreement' : 'Custom contract (uploaded)'}</p>
+          <p style="margin:4px 0;color:#6b7280;font-size:14px;">Signed by: ${clientName}</p>
+          <p style="margin:4px 0;color:#6b7280;font-size:14px;">Signed at: ${signedAt}</p>
+        </div>
+        <p style="font-size:13px;color:#374151;">This email serves as your acceptance record. The timestamp and client identity have been recorded in PI Connect and are available in your job dashboard at any time.</p>
+        <a href="https://pi-connect-mvp.vercel.app?page=jobs&tab=my-jobs" style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          Go to My Jobs
+        </a>
+        <p style="color:#888;font-size:12px;margin-top:24px;">PI Connect — piconnect.co</p>
+      </div>
+    `
+  }),
+
+  contract_declined: ({ recipientName, clientName, jobTitle, reason }) => ({
+    subject: `Contract declined by ${clientName} — ${jobTitle}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">Contract Declined</h2>
+        <p>Hi ${recipientName},</p>
+        <p><strong>${clientName}</strong> has declined the engagement contract for <strong>${jobTitle}</strong>.</p>
+        ${reason ? `<div style="background:#fef2f2;border-left:3px solid #dc2626;padding:12px;margin:16px 0;"><strong>Reason:</strong><br>${reason}</div>` : ''}
+        <p>The job has been returned to open status. You may repost it or reach out to the client directly to discuss the terms.</p>
+        <a href="https://pi-connect-mvp.vercel.app" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+          View Jobs
         </a>
       </div>
     `
@@ -206,7 +282,7 @@ const templates = {
           <strong>Reason:</strong><br>${notes}
         </div>` : ''}
         <p>If you believe this is an error or would like to resubmit with updated documentation, please update your profile and contact us.</p>
-        <a href="https://piconnect.co" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
+        <a href="https://pi-connect-mvp.vercel.app?page=profile-edit" style="display:inline-block;background:#667eea;color:white;padding:12px 24px;border-radius:6px;text-decoration:none;margin-top:16px;">
           Update My Profile
         </a>
       </div>
