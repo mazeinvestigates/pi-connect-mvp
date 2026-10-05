@@ -20,6 +20,7 @@ import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import LandingPage from './pages/LandingPage'
 import PIOnboarding from './components/PIOnboarding'
+import PIConnectLogo from './components/PIConnectLogo'
 import NotificationCenter from './components/NotificationCenter'
 import './App.css'
 
@@ -329,9 +330,9 @@ export default function App() {
     <header className="app-header">
       <div className="header-content">
         <div className="header-left">
-          <h1 className="logo" onClick={() => { setCurrentPage('home'); setMobileMenuOpen(false) }}>
-            PI Connect
-          </h1>
+         <div className="logo" onClick={() => { setCurrentPage('home'); setMobileMenuOpen(false) }} style={{ cursor: 'pointer' }}>
+  <PIConnectLogo size={32} showWordmark={true} />
+</div>
         </div>
 
         {/* Desktop nav */}
